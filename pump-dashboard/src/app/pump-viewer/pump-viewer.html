@@ -1,0 +1,30 @@
+<div class="pump-viewer-container">
+
+  <div class="viewer-toolbar">
+
+    <div class="viewer-title">
+      Pompe 3D
+    </div>
+
+    <div class="viewer-status">
+
+      <span
+        class="status-dot"
+        [class.status-ok]="status === 'ok'"
+        [class.status-fault]="status === 'fault'">
+      </span>
+
+      <span>
+        {{ status === 'ok' ? 'Fonctionnement normal' : 'Défaut détecté' }}
+      </span>
+
+    </div>
+
+  </div>
+
+  <div
+    #canvasContainer
+    class="viewer-canvas">
+  </div>
+
+</div>

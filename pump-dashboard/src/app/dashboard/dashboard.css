@@ -1,0 +1,512 @@
+/* ===========================
+GENERAL
+=========================== */
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    background:#eef3f8;
+}
+
+.panel{
+
+    background:#eef3f8;
+    min-height:100vh;
+    padding:25px;
+    font-family:Arial,Helvetica,sans-serif;
+
+}
+
+/* ===========================
+HEADER
+=========================== */
+
+.panel-head{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    background:#fff;
+    padding:20px 25px;
+    border-radius:18px;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+
+    margin-bottom:25px;
+
+}
+
+.panel-head-title{
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+}
+
+.panel-head h1{
+
+    font-size:28px;
+
+}
+
+.panel-head-right{
+
+    display:flex;
+    align-items:center;
+    gap:20px;
+
+}
+
+.panel-head-sub{
+
+    color:#666;
+
+}
+
+.live-dot{
+
+    width:12px;
+    height:12px;
+    background:#16a34a;
+    border-radius:50%;
+
+}
+
+.reset-btn{
+
+    background:#2563eb;
+    color:white;
+    border:none;
+    padding:12px 22px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+
+}
+
+.reset-btn:hover{
+
+    background:#1d4ed8;
+
+}
+
+/* ===========================
+HISTORY
+=========================== */
+
+.history-banner{
+
+    background:#dbeafe;
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:20px;
+
+}
+
+/* ===========================
+TOP
+=========================== */
+
+.top-section{
+
+    display:grid;
+    grid-template-columns:4fr 1fr;
+    gap:25px;
+
+    margin-bottom:25px;
+
+}
+
+.gauges{
+
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+
+}
+
+.right-panel{
+
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+
+}
+
+/* ===========================
+CARDS
+=========================== */
+
+.gauge-card,
+.status-card,
+.health-card,
+.chart-card,
+.pump-card{
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:20px;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+
+    transition:.3s;
+
+}
+
+.gauge-card:hover,
+.chart-card:hover,
+.pump-card:hover{
+
+    transform:translateY(-4px);
+
+}
+
+/* ===========================
+GAUGES
+=========================== */
+
+.gauge-svg{
+
+    width:150px;
+    height:90px;
+
+    margin:auto;
+    display:block;
+
+}
+
+.zone-track{
+
+    fill:none;
+    stroke:#e5e7eb;
+    stroke-width:20;
+    stroke-linecap:round;
+
+}
+
+.zone-progress{
+
+    fill:none;
+    stroke:#2563eb;
+    stroke-width:20;
+    stroke-linecap:round;
+
+}
+
+.needle-group{
+
+    transform-box:view-box;
+    transform-origin:100px 100px;
+    transition:.4s;
+
+}
+
+.needle{
+
+    stroke:#1e293b;
+    stroke-width:4;
+    stroke-linecap:round;
+
+}
+
+.needle-pivot{
+
+    fill:#1e293b;
+
+}
+
+.gauge-value{
+
+    text-align:center;
+    margin-top:10px;
+
+    font-size:30px;
+    font-weight:bold;
+    color:#2563eb;
+
+}
+
+.gauge-unit{
+
+    font-size:15px;
+    color:#666;
+
+}
+
+.circle-title{
+
+    text-align:center;
+    margin-top:8px;
+    font-weight:bold;
+    color:#444;
+
+}
+
+/* ===========================
+STATUS
+=========================== */
+
+.status-card{
+
+    text-align:center;
+
+}
+
+.status-card h3{
+
+    margin:10px 0;
+
+}
+
+.status{
+
+    display:inline-block;
+
+    padding:10px 18px;
+
+    border-radius:30px;
+
+    font-weight:bold;
+
+    margin-bottom:15px;
+
+}
+
+.state-normal{
+
+    background:#dcfce7;
+    color:#15803d;
+
+}
+
+.state-warning{
+
+    background:#fef3c7;
+    color:#ca8a04;
+
+}
+
+.state-fault{
+
+    background:#fee2e2;
+    color:#dc2626;
+
+}
+
+/* ===========================
+HEALTH
+=========================== */
+
+.health-card{
+
+    text-align:center;
+
+}
+
+.health-circle-wrap{
+
+    position:relative;
+
+    width:170px;
+    height:170px;
+
+    margin:auto;
+
+}
+
+.health-ring{
+
+    width:100%;
+    height:100%;
+
+}
+
+.health-track{
+
+    fill:none;
+    stroke:#e5e7eb;
+    stroke-width:14;
+
+}
+
+.health-progress{
+
+    fill:none;
+    stroke:#2563eb;
+    stroke-width:14;
+
+    stroke-linecap:round;
+
+    transform:rotate(-90deg);
+    transform-origin:50% 50%;
+
+}
+
+.health-value-overlay{
+
+    position:absolute;
+
+    top:50%;
+    left:50%;
+
+    transform:translate(-50%,-50%);
+
+    font-size:34px;
+
+    font-weight:bold;
+
+    color:#2563eb;
+
+}
+
+/* ===========================
+MIDDLE
+=========================== */
+
+.middle-section{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:25px;
+
+    margin-bottom:25px;
+
+}
+.middle-section .chart-card,
+.middle-section .pump-card{
+
+    height:420px;
+
+}
+
+.pump-card{
+    padding:0;
+
+    overflow:hidden;
+
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    min-height:400px;
+
+}
+.pump-card app-pump-viewer{
+
+    display:block;
+
+    width:100%;
+
+    height:100%;
+
+}
+
+/* ===========================
+BOTTOM
+=========================== */
+
+.bottom-section{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:25px;
+
+}
+/* ===========================
+CHARTS
+=========================== */
+
+.chart-card{
+
+    background:#fff;
+
+    border-radius:18px;
+
+    padding:20px;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+
+    overflow:hidden;
+
+    display:flex;
+
+    flex-direction:column;
+
+    height:420px;
+
+}
+
+.chart-card header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:15px;
+
+    flex-shrink:0;
+
+}
+
+.chart-card h3{
+
+    margin:0;
+
+    font-size:22px;
+
+    font-weight:700;
+
+}
+
+.chart-card span{
+
+    color:#2563eb;
+
+    font-size:22px;
+
+    font-weight:bold;
+
+}
+
+.chart-canvas-wrap{
+
+    position:relative;
+
+    flex:1;
+
+    width:100%;
+
+    overflow:hidden;
+
+}
+
+.chart-canvas-wrap canvas{
+
+    position:absolute;
+
+    top:0;
+
+    left:0;
+
+    width:100% !important;
+
+    height:100% !important;
+
+}

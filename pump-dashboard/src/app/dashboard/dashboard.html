@@ -1,0 +1,278 @@
+<div class="panel">
+
+  <!-- ================= HEADER ================= -->
+  <header class="panel-head">
+
+    <div class="panel-head-title">
+      <span class="live-dot"></span>
+      <h1>Monitoring Pompe</h1>
+    </div>
+
+    <div class="panel-head-right">
+
+      <span class="panel-head-sub">
+        ESP32 / Capteurs • Mise à jour 2s
+      </span>
+
+      <button class="reset-btn" (click)="resetData()">
+        RESET
+      </button>
+
+    </div>
+
+  </header>
+
+  <!-- Chargement historique -->
+
+  <div
+    class="history-banner history-banner--loading"
+    *ngIf="isLoadingHistory">
+
+    <span class="history-spinner"></span>
+
+    Chargement de l'historique...
+
+  </div>
+
+  <!-- ==================== HAUT ==================== -->
+
+  <section class="top-section">
+
+    <!-- KPIs -->
+
+    <div class="gauges">
+
+      <div
+        class="gauge-card"
+        *ngFor="let g of gaugesConfig">
+
+        <svg class="gauge-svg" viewBox="0 0 200 120">
+
+          <path
+            d="M20,100 A80,80 0 0,1 100,20 A80,80 0 0,1 180,100"
+            class="zone-track">
+          </path>
+
+          <path
+            [attr.d]="getProgressPath(g.key,g.min,g.max)"
+            class="zone-progress">
+          </path>
+
+          <g
+            class="needle-group"
+            [style.transform]="'rotate(' + getNeedleAngle(g.key,g.min,g.max) + 'deg)'">
+
+            <line
+              x1="100"
+              y1="100"
+              x2="100"
+              y2="26"
+              class="needle">
+            </line>
+
+          </g>
+
+          <circle
+            cx="100"
+            cy="100"
+            r="8"
+            class="needle-pivot">
+          </circle>
+
+        </svg>
+
+        <div class="gauge-value">
+
+          {{getGaugeValue(g.key)}}
+
+          <span class="gauge-unit">
+
+            {{g.unit}}
+
+          </span>
+
+        </div>
+
+        <div class="circle-title">
+
+          {{g.label}}
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Etat + Health -->
+
+    <div class="right-panel">
+
+      <div class="status-card">
+
+        <h3>Etat Pompe</h3>
+
+        <span
+          class="status"
+          [ngClass]="{
+            'state-normal':latestData.label=='normal',
+            'state-warning':latestData.label=='warning',
+            'state-fault':latestData.label=='fault'
+          }">
+
+          {{latestData.label}}
+
+        </span>
+
+        <h3>Type anomalie</h3>
+
+        <span
+          class="status"
+          [ngClass]="{
+            'state-normal':latestData.label=='normal',
+            'state-warning':latestData.label=='warning',
+            'state-fault':latestData.label=='fault'
+          }">
+
+          {{latestData.anomaly_type || 'Aucune'}}
+
+        </span>
+
+      </div>
+
+      <div class="health-card">
+
+        <h3>Health Score</h3>
+
+        <div class="health-circle-wrap">
+
+          <svg class="health-ring" viewBox="0 0 160 160">
+
+            <circle
+              cx="80"
+              cy="80"
+              r="68"
+              class="health-track">
+            </circle>
+
+            <circle
+              cx="80"
+              cy="80"
+              r="68"
+              class="health-progress"
+              [attr.stroke-dasharray]="healthCircumference"
+              [attr.stroke-dashoffset]="getHealthOffset()">
+            </circle>
+
+          </svg>
+
+          <div class="health-value-overlay">
+
+            {{latestData.health_score}}%
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ==================== MILIEU ==================== -->
+
+  <section class="middle-section">
+     <!-- Pompe -->
+
+    <article class="pump-card">
+
+      <app-pump-viewer
+        [status]="pumpStatus"
+        [vibrating]="pumpIsRunning">
+      </app-pump-viewer>
+
+    </article>
+
+
+    <!-- Vibration -->
+
+    <article class="chart-card">
+
+      <header>
+
+        <h3>Vibration RMS</h3>
+
+        <span>{{latestData.vibration_rms}}</span>
+
+      </header>
+
+      <div class="chart-canvas-wrap">
+
+        <canvas
+          #vibrationCanvas
+          width="900"
+          height="380">
+        </canvas>
+
+      </div>
+
+    </article>
+
+   
+  </section>
+
+  <!-- ==================== BAS ==================== -->
+
+  <section class="bottom-section">
+
+    <!-- Micro -->
+
+    <article class="chart-card">
+
+      <header>
+
+        <h3>Microphone RMS</h3>
+
+        <span>{{latestData.microphone_rms}}</span>
+
+      </header>
+
+      <div class="chart-canvas-wrap">
+
+        <canvas
+          #soundCanvas
+          width="900"
+          height="380">
+        </canvas>
+
+      </div>
+
+    </article>
+
+    <!-- Voltage -->
+
+    <article class="chart-card">
+
+      <header>
+
+        <h3>Voltage</h3>
+
+        <span>{{latestData.voltage}} V</span>
+
+      </header>
+
+      <div class="chart-canvas-wrap">
+
+        <canvas
+          #voltageCanvas
+          width="900"
+          height="380">
+        </canvas>
+
+      </div>
+
+    </article>
+
+  </section>
+
+</div>
