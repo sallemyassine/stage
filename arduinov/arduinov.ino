@@ -7,15 +7,9 @@
 #include <ArduinoJson.h>
 #include <math.h>
 
-//=======================
-// PIEZO - CONFIGURATION
-//=======================
-// IMPORTANT : une seule définition (l'ancien code en avait deux, la 2e écrasait la 1re)
+
 #define PIEZO_SAMPLES 200
 #define PIEZO_FILTER_SIZE 5
-
-// Facteur d'échelle : à calibrer chez vous.
-// Baisser la valeur si le repos dépasse 200. L'augmenter si la vibration ne dépasse pas 200.
 #define PIEZO_SCALE 8.0
 
 float piezoBuffer[PIEZO_FILTER_SIZE] = {0};
@@ -29,9 +23,6 @@ const float TANK_AREA = PI * TANK_RADIUS * TANK_RADIUS;
 float previousVolume = -1;
 unsigned long previousTime = 0;
 
-//=======================
-// WIFI
-//=======================
 const char* ssid = "CRNS WIFI";
 const char* password = "Crns#2020#";
 
@@ -52,10 +43,9 @@ PubSubClient mqtt(espClient);
 DHT dht(DHTPIN, DHTTYPE);
 
 //=======================
-// ADS1115 (piézo sur canal 0)
+// ADS1115 
 //=======================
 Adafruit_ADS1115 ads;
-
 //=======================
 // I2S MICROPHONE
 //=======================
@@ -65,13 +55,11 @@ Adafruit_ADS1115 ads;
 #define I2S_SD   32
 #define I2S_SAMPLES 256
 int32_t i2sBuffer[I2S_SAMPLES];
-
 //=======================
 // ULTRASON (HC-SR04)
 //=======================
 #define TRIG_PIN 18
 #define ECHO_PIN 19
-
 //=======================
 // CAPTEUR DE DEBIT (YF-S201)
 //=======================
@@ -83,7 +71,6 @@ void IRAM_ATTR flowPulseISR()
 {
   pulseCount++;
 }
-
 //=======================
 // WIFI CONNECT
 //=======================
@@ -100,7 +87,6 @@ void setup_wifi()
   Serial.println("WiFi OK");
   Serial.println(WiFi.localIP());
 }
-
 //=======================
 // MQTT RECONNECT
 //=======================
@@ -121,16 +107,13 @@ void reconnectMQTT()
     }
   }
 }
-
 //=======================
 // MICROPHONE : RAW + RMS
 //=======================
 void readMic(int32_t &micRaw, float &micRMS)
 {
   size_t bytesRead = 0;
-
   i2s_read(I2S_PORT, i2sBuffer, sizeof(i2sBuffer), &bytesRead, portMAX_DELAY);
-
   int samplesRead = bytesRead / sizeof(int32_t);
   if (samplesRead <= 0)
   {
@@ -158,7 +141,6 @@ void readMic(int32_t &micRaw, float &micRMS)
   }
   micRMS = sqrt(sumSquares / samplesRead);
 }
-
 //=======================
 // PIEZO : RMS + MISE A L'ECHELLE (0-200 repos / >200 vibration)
 //=======================
@@ -166,7 +148,6 @@ float readPiezoRMS()
 {
   float samples[PIEZO_SAMPLES];
   double sum = 0;
-
   for (int i = 0; i < PIEZO_SAMPLES; i++)
   {
     samples[i] = ads.readADC_SingleEnded(0);
@@ -184,13 +165,11 @@ float readPiezoRMS()
   }
 
   float rms = sqrt(sumSquares / PIEZO_SAMPLES);
-
   // Mise a l'echelle : ajustez PIEZO_SCALE selon vos tests reels
   float scaled = rms * PIEZO_SCALE;
 
   return scaled;
 }
-
 // Filtre median : lisse les pics parasites avant envoi
 float medianPiezoFilter(float newValue)
 {
@@ -213,7 +192,6 @@ float medianPiezoFilter(float newValue)
   {
     temp[i] = piezoBuffer[i];
   }
-
   for (int i = 0; i < PIEZO_FILTER_SIZE - 1; i++)
   {
     for (int j = i + 1; j < PIEZO_FILTER_SIZE; j++)
@@ -229,7 +207,6 @@ float medianPiezoFilter(float newValue)
 
   return temp[PIEZO_FILTER_SIZE / 2];
 }
-
 //=======================
 // ULTRASON : DISTANCE (cm)
 //=======================
@@ -247,21 +224,17 @@ float readDistanceCM()
   float distance = duration * 0.0343 / 2.0;
   return distance;
 }
-
 //=======================
 // SETUP
 //=======================
 void setup()
 {
   Serial.begin(115200);
-
   // WiFi + MQTT
   setup_wifi();
   mqtt.setServer(mqtt_server, mqtt_port);
-
   // DHT11
   dht.begin();
-
   // ADS1115 : initialisation explicite du bus I2C (obligatoire sur ESP32
   // avant d'appeler ads.begin(), sinon le module n'est pas detecte)
   Wire.begin(21, 22); // SDA=21, SCL=22 -> adaptez si votre cablage est different
@@ -274,11 +247,9 @@ void setup()
     while (1) { delay(1000); } // bloque ici pour eviter de faire tourner le reste sans capteur
   }
   Serial.println("ADS1115 OK");
-
   // gain et vitesse d'echantillonnage adaptes au piezo
   ads.setGain(GAIN_ONE);               // +/-4.096V, resolution ~0.125mV/bit
   ads.setDataRate(RATE_ADS1115_860SPS); // le plus rapide dispo, pour coller aux 500us
-
   // I2S microphone
   i2s_config_t i2s_config = {
     .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),
@@ -301,11 +272,9 @@ void setup()
 
   i2s_driver_install(I2S_PORT, &i2s_config, 0, NULL);
   i2s_set_pin(I2S_PORT, &pin_config);
-
   // Ultrason
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
-
   // Debitmetre
   pinMode(FLOW_PIN, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(FLOW_PIN), flowPulseISR, FALLING);
@@ -313,9 +282,6 @@ void setup()
   previousTime = millis();
 }
 
-//=======================
-// LOOP
-//=======================
 void loop()
 {
   if (!mqtt.connected())
@@ -332,22 +298,17 @@ void loop()
     temperature = -1;
     humidity = -1;
   }
-
   // --- Piezo (calibre 0-200 repos / >200 vibration) ---
   float piezoRaw = readPiezoRMS();
   float piezoFiltered = medianPiezoFilter(piezoRaw);
-
   // --- Voltage (tension mesuree sur meme canal ADS1115, exemple) ---
   int16_t adcVal = ads.readADC_SingleEnded(1);
   float voltage = ads.computeVolts(adcVal);
-
   // --- Microphone ---
   float micRMS = 0;
   readMic(micRaw, micRMS);
-
   // --- Distance / Debit / Pression ---
   float distance = readDistanceCM();
-
   // Calcul du debit a partir des pulses (sur 1 seconde)
   unsigned long currentTime = millis();
   float debit = 0;
@@ -357,16 +318,13 @@ void loop()
     unsigned long pulses = pulseCount;
     pulseCount = 0;
     interrupts();
-
     debit = pulses / FLOW_CALIBRATION_FACTOR; // L/min
     previousTime = currentTime;
   }
-
-  // Pression estimee a partir de la hauteur d'eau (exemple simplifie)
+  // Pression estimee a partir de la hauteur d'eau 
   float waterHeight = TANK_HEIGHT - distance;
   if (waterHeight < 0) waterHeight = 0;
   float pression = waterHeight * 10.0; // facteur a adapter a votre capteur reel
-
   // --- Construction du JSON ---
   StaticJsonDocument<300> doc;
   doc["temperature"] = temperature;
@@ -377,7 +335,6 @@ void loop()
   doc["distance"] = distance;
   doc["debit"] = debit;
   doc["pression"] = pression;
-
   char buffer[300];
   size_t n = serializeJson(doc, buffer);
 
