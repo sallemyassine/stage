@@ -19,24 +19,16 @@ Le projet combine l'acquisition de données par ESP32, la communication MQTT, la
 
 ## Architecture
 
-ESP32 & Sensors
-      |
-      v
-  MQTT Broker
-      |
-      v
+ESP32 & Sensors -> MQTT Broker
+     ->
  Python / ML
-      |
-      v
+      ->
  Laravel API
-      |
-      v
+     ->
   MySQL
-      |
-      v
+      ->
 Angular Dashboard
-      |
-      v
+      ->
  Digital Twin 3D
 
 ## Fonctionnalités principales
