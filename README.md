@@ -49,13 +49,7 @@ Angular Dashboard
 
 ## Structure du projet
 
-.
-├── arduinov/               # Firmware ESP32
-├── ia/                     # Modèles et scripts ML
-├── my-backend/             # Backend Laravel
-├── pump-dashboard/         # Application Angular
-├── generate_pump_blender.py
-└── README.md
+├── arduinov/               # Firmware ESP32                                                                                                                       ├── ia/                     # Modèles et scripts ML                                                                                                               ├── my-backend/             # Backend Laravel                                                                                                                     ├── pump-dashboard/         # Application Angular                                                                                                                  ├── generate_pump_blender.py                                                                                                                                    └── README.md
 
 ## Réalisé par
 
